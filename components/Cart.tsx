@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import Link from 'next/link'
 import css from 'styled-jsx/css'
 import { useSelector } from 'react-redux'
 
@@ -14,6 +15,7 @@ const Cart = css`
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
 }
 
 .contador {
@@ -40,14 +42,24 @@ export default memo(() => {
     
     
     return (
-        <div className='cart'>
-            <style jsx>{Cart}</style>
+        <Link href="/pagar">
+            <a>
+            <div className='cart'>
+                <style jsx>{Cart}</style>
 
 
-            <img src='/icons/cart-white.svg' width={35} color="white" />
-            {basket.length > 0 && <div className="contador">
-                {basket.length}
-            </div>}
-        </div>
+                <img 
+                    src='/icons/cart-white.svg' 
+                    width={35} 
+                    color="white" 
+                />
+                {basket.length > 0 && (
+                    <div className="contador">
+                        {basket.length}
+                    </div>
+                )}
+            </div>
+            </a>
+        </Link>
     )
 })

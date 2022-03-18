@@ -4,10 +4,19 @@ import {
     AddToBasket, 
     RemoveFromBasket 
 } from '../../../../state/checkout/actions'
+import { IBasket, ICanchaFormated, IItem } from '../../../../types'
 import { Hora } from './styles'
 
 
-export default memo<any>(({hora, cancha, basket, precio}) => {
+interface HoraProps {
+    hora:   string
+    cancha: ICanchaFormated
+    basket: IBasket
+    precio: number
+}
+
+
+export default memo<HoraProps>(({hora, cancha, basket, precio}) => {
     const dispatch = useDispatch()
     const [Selected, setSelected] = useState(false)
     const [Disabled, setDisabled] = useState(false)
@@ -22,16 +31,16 @@ export default memo<any>(({hora, cancha, basket, precio}) => {
         if (Selected) {
             const arr = basket.filter((item) => {
                 return (
-                    item.cancha_id === cancha.id && 
-                    item.day       === cancha.day && 
-                    item.month     === cancha.month &&
-                    item.year      === cancha.year &&
-                    item.hour      === hora
+                    item?.cancha_id === cancha?.id && 
+                    item?.day       === cancha?.day && 
+                    item?.month     === cancha?.month &&
+                    item?.year      === cancha?.year &&
+                    item?.hour      === hora
                 ) === false
             })
             dispatch(RemoveFromBasket(arr))
         } else {
-            dispatch(AddToBasket({
+            const item: IItem = {
                 cancha_id: cancha.id,
                 nombre:    cancha.nombre,
                 img:       cancha.image_url,
@@ -40,7 +49,8 @@ export default memo<any>(({hora, cancha, basket, precio}) => {
                 month:     cancha.month,
                 year:      cancha.year,
                 hour:      hora
-            }))
+            }
+            dispatch(AddToBasket(item))
             setSelected(true)
         }
 
@@ -50,13 +60,13 @@ export default memo<any>(({hora, cancha, basket, precio}) => {
 
     useEffect(() => {
         let existe = false
-        basket.map((item) => {
+        basket.map((item: IItem) => {
             if(
-                hora === item.hour &&
-                cancha.id == item.cancha_id &&
-                cancha.day == item.day &&
-                cancha.month == item.month &&
-                cancha.year == item.year
+                hora          === item?.hour &&
+                cancha?.id    == item?.cancha_id &&
+                cancha?.day   == item?.day &&
+                cancha?.month == item?.month &&
+                cancha?.year  == item?.year
             ) {
                 existe = true
             }

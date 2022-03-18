@@ -28,8 +28,7 @@ export default memo<any>(({basket}) => (
             {basket.length > 0 ? (
                 <div className='items'>
                     <Items basket={basket} />
-
-                    <Total />
+                    <Total basket={basket} />
                 </div>
             ) : (
                 <NoItems />

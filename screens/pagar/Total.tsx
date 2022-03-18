@@ -1,5 +1,8 @@
 import { memo } from 'react'
 import css from 'styled-jsx/css'
+import { getBasketTotal } from '../../state/checkout/actions'
+import axios from 'axios'
+import { config } from '../../utils/axios-config'
 
 
 const Total = css`
@@ -66,31 +69,53 @@ td {
 `
 
 
-export default memo(() => (
-    <div className="total">
-        <style jsx>{Total}</style>
-        <style jsx>{Table}</style>
+export default memo<any>(({basket}) => {
+    const pagar = async () => {
+        try {            
+            const res = await axios.post(
+                `${process.env.API}/pago`,
+                {basket},
+                config
+            )
+            const data = res.data
+            const token = data.token
+            const url = data.url
+            console.log(data)
+            // setToken(token)
+            // setUrl(url)
+            // setPreparado(true)
+        } catch (error) {
+            console.error(error.message)
+        }
+    }
 
 
-        <h2>Precio Total</h2>
+    return(
+        <div className="total">
+            <style jsx>{Total}</style>
+            <style jsx>{Table}</style>
 
-        <div className="computo">
-            <table>
-                <tbody>
-                    <tr>
-                        <th>Subtotal</th>
-                        <td className='sub'>$324234</td>
-                    </tr>
-                    <tr>
-                        <th>Total:</th>
-                        <td>$645645</td>
-                    </tr>
-                </tbody>
-            </table>
+
+            <h2>Precio Total</h2>
+
+            <div className="computo">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Subtotal</th>
+                            <td className='sub'>${getBasketTotal(basket)}</td>
+                        </tr>
+                        <tr>
+                            <th>Total:</th>
+                            <td>${getBasketTotal(basket)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div className="boton" onClick={() => pagar()}>
+                Pagar
+            </div>
         </div>
-        
-        <div className="boton">
-            Pagar
-        </div>
-    </div>
-))
+    )
+})

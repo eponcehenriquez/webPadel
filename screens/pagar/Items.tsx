@@ -1,5 +1,7 @@
 import { memo } from 'react'
 import css from 'styled-jsx/css'
+import { useDispatch } from 'react-redux'
+import { RemoveFromBasket } from '../../state/checkout/actions'
 
 
 const Table = css`
@@ -35,38 +37,57 @@ td, th {
 `
 
 
-export default memo<any>(({basket}) => (
-    <table>
-        <style jsx>{Table}</style>
+export default memo<any>(({basket}) => {
+    const dispatch = useDispatch()
 
 
-        <thead>
-            <tr>
-                <th></th>
-                <th></th>
-                <th>Lugar</th>
-                <th>Hora</th>
-                <th>Fecha</th>
-                <th>Precio</th>
-            </tr>
-        </thead>
-        <tbody>
-            {basket.map((item, i) => (
-                <tr key={i}>
-                    <td>x</td>
-                    <td>
-                        <img 
-                            src={item.img} 
-                            width={60} 
-                            alt="i" 
-                        />
-                    </td>
-                    <td>{item.nombre}</td>
-                    <td>{item.hour}</td>
-                    <td>{item.day + "/" + item.month + "/" + item.year}</td>
-                    <td>${item.precio}</td>
+    const handleDelete = (item) => {
+        const arr = basket.filter((basketItem) => {
+            return (
+                basketItem?.cancha_id === item?.cancha_id && 
+                basketItem?.day       === item?.day && 
+                basketItem?.month     === item?.month &&
+                basketItem?.year      === item?.year &&
+                basketItem?.hour      === item.hour
+            ) === false
+        })
+        dispatch(RemoveFromBasket(arr))
+    }
+
+
+    return (
+        <table>
+            <style jsx>{Table}</style>
+
+
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Lugar</th>
+                    <th>Hora</th>
+                    <th>Fecha</th>
+                    <th>Precio</th>
                 </tr>
-            ))}
-        </tbody>
-    </table>
-))
+            </thead>
+            <tbody>
+                {basket.map((item, i) => (
+                    <tr key={i}>
+                        <td onClick={() => handleDelete(item)}>x</td>
+                        <td>
+                            <img 
+                                src={item.img} 
+                                width={60} 
+                                alt="i" 
+                            />
+                        </td>
+                        <td>{item.nombre}</td>
+                        <td>{item.hour}</td>
+                        <td>{item.day + "/" + item.month + "/" + item.year}</td>
+                        <td>${item.precio}</td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    )
+})

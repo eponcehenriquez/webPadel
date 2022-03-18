@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
 import { 
     WebpayPlus, 
     Options,
@@ -6,6 +5,8 @@ import {
     IntegrationCommerceCodes,
     Environment
 } from 'transbank-sdk'
+import useHandler from "../../backend/middleware/handler"
+import { IBasket } from '../../types'
 
 
 const tx = new WebpayPlus.Transaction(
@@ -17,36 +18,44 @@ const tx = new WebpayPlus.Transaction(
 )
 
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-    switch (req.method) {
-        case "POST":
-            return await Pagar(req, res)
-    
-        default:
-            return res.status(405).end()
-    }
-}
+export default useHandler()
+    .post(async (req, res) => await Pagar(req, res))
 
 
 const Pagar = async (req, res) => {
-    try {
-        const { cantidadHoras } = req.body
+    const basket: IBasket = req.body.basket
+    let amount = 0
+    basket.map((item) => {
+        if (
+            item.hour === "17:00" || 
+            item.hour === "18:30" || 
+            item.hour === "20:00" ||
+            item.hour === "21:30" ||
+            item.hour === "23:00"
+        ) {
+            amount = amount + 20000
+        } else {
+            amount = amount + 12000
+        }
+    })
 
-        const buyOrder  = "padel-vip-" + Math.floor(Math.random() * 100000) + 1
-        const sessionId = "s-" + Math.floor(Math.random() * 100000) + 1
-        const amount    = 15990 * cantidadHoras
-        const returnUrl = `${process.env.URL}/confirmar-pago`
-        
-        const response = await tx.create(
-            buyOrder, 
-            sessionId,
-            amount, 
-            returnUrl
-        )
-        
-        return res.status(200).json(response)
-    } catch (error) {
-        console.error(error)
-        return res.status(500).end(error.message)
+    if (amount === 0) {
+        throw new Error("Debes hacer reservaciones antes de hacer un pago")
     }
+
+    console.log(amount)
+
+    const buyOrder  = "padel-vip-" + Math.floor(Math.random() * 100000) + 1
+    const sessionId = "s-" + Math.floor(Math.random() * 100000) + 1
+    const returnUrl = `${process.env.URL}/confirmar-pago`
+    
+    const response = await tx.create(
+        buyOrder, 
+        sessionId,
+        amount, 
+        returnUrl
+    )
+    
+    return res.status(200).json(response)
+
 }
