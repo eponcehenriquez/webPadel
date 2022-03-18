@@ -1,0 +1,5 @@
+.react-calendar {
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 100;
+}
