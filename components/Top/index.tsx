@@ -69,9 +69,13 @@ export default memo(() => {
                         </div>
                     )}
                 </div>
-                <div className="button">
-                    Reservar
-                </div>
+                <Link href="/pagar">
+                    <a className='abutton'> 
+                        <div className="button">
+                            Reservar
+                        </div>
+                    </a>
+                </Link>
             </div>
         </div>
     )

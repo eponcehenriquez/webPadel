@@ -84,7 +84,7 @@ export default memo(() => {
                                 INICIO
                             </a>
                         </Link>
-                        <Link href={'/'}>
+                        <Link href={'/pagar'}>
                             <a>
                                 RESERVAR
                             </a>

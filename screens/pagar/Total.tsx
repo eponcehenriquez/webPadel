@@ -1,8 +1,12 @@
-import { memo } from 'react'
+import { memo, useState, useEffect, useRef } from 'react'
+import { useDispatch } from 'react-redux'
 import css from 'styled-jsx/css'
-import { getBasketTotal } from '../../state/checkout/actions'
 import axios from 'axios'
 import { config } from '../../utils/axios-config'
+import { 
+    getBasketTotal, 
+    EmptyBasket 
+} from '../../state/checkout/actions'
 
 
 const Total = css`
@@ -69,7 +73,21 @@ td {
 `
 
 
+const None = css`
+.none {
+    display: none
+}
+`
+
+
 export default memo<any>(({basket}) => {
+    const dispatch = useDispatch()
+    const myForm = useRef(null);
+    const [Token, setToken] = useState("")
+    const [Url, setUrl] = useState("")
+    const [Preparado, setPreparado] = useState(false)
+
+
     const pagar = async () => {
         try {            
             const res = await axios.post(
@@ -81,19 +99,30 @@ export default memo<any>(({basket}) => {
             const token = data.token
             const url = data.url
             console.log(data)
-            // setToken(token)
-            // setUrl(url)
-            // setPreparado(true)
+            setToken(token)
+            setUrl(url)
+            setPreparado(true)
         } catch (error) {
             console.error(error.message)
         }
     }
 
 
+    useEffect(() => {
+        if (Preparado) {
+            console.log("preparado")
+            myForm.current.submit()
+            // dispatch(EmptyBasket())
+        }
+    }, [Preparado, setPreparado, Url, Token])
+    
+
+
     return(
         <div className="total">
             <style jsx>{Total}</style>
             <style jsx>{Table}</style>
+            <style jsx>{None}</style>
 
 
             <h2>Precio Total</h2>
@@ -116,6 +145,25 @@ export default memo<any>(({basket}) => {
             <div className="boton" onClick={() => pagar()}>
                 Pagar
             </div>
+
+            <form 
+                className='form none'
+                method="post" 
+                action={Url}
+                ref={myForm}
+            >
+                <input 
+                    type="hidden" 
+                    name="token_ws" 
+                    value={Token} 
+                />
+
+                <input 
+                    className='pago-boton'
+                    type="submit" 
+                    value="Ir a pagar" 
+                />
+            </form>
         </div>
     )
 })

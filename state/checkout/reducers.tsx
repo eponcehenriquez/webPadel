@@ -1,7 +1,8 @@
 import {
     ADD_TO_BASKET,
     REMOVE_FROM_BASKET,
-    STORED_BASKET
+    STORED_BASKET,
+    EMPTY_BASKET
 } from './types'
 import Cookie from "js-cookie"
 
@@ -34,6 +35,14 @@ export const checkoutReducer = (state = initialState, action) => {
             return {
                 ...state,
                 basket: [...state.basket, ...action.payload]
+            }
+
+        
+        case EMPTY_BASKET:
+            Cookie.remove("basket")
+            return {
+                ...state,
+                basket: []
             }
 
 

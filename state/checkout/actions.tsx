@@ -1,8 +1,14 @@
 import {
     ADD_TO_BASKET,
     REMOVE_FROM_BASKET,
-    STORED_BASKET
+    STORED_BASKET,
+    EMPTY_BASKET
 } from './types'
+
+
+export const EmptyBasket = () => ({
+    type: EMPTY_BASKET
+})
 
 
 export const StoredBasket = (data) => ({
