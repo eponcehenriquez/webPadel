@@ -12,8 +12,8 @@ class CanchaController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return "hola";
-        // return Cancha::all();
+        // return "hola";
+        return Cancha::all();
     }
 
     /**
